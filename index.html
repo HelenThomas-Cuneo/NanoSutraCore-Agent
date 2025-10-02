@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NanoSutra Core Agent - Test Interface</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        
+        h1 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+        
+        .subtitle {
+            color: #666;
+            margin-bottom: 40px;
+            font-size: 1.1em;
+        }
+        
+        .test-section {
+            margin-bottom: 40px;
+        }
+        
+        h2 {
+            color: #333;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #667eea;
+        }
+        
+        .button-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            font-weight: 600;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        #response {
+            background: #f7f9fc;
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px solid #e1e8ed;
+            white-space: pre-wrap;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            max-height: 500px;
+            overflow-y: auto;
+            line-height: 1.6;
+        }
+        
+        .status {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+        
+        .status.loading {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .info-box {
+            background: #e7f3ff;
+            border-left: 4px solid #2196F3;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+        
+        .info-box strong {
+            color: #1976D2;
+        }
+        
+        code {
+            background: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🌟 NanoSutra Core Agent</h1>
+        <p class="subtitle">Healing Buddhi System - API Test Interface</p>
+        
+        <div class="info-box">
+            <strong>Status:</strong> <span id="apiStatus">Checking connection...</span>
+        </div>
+        
+        <div class="test-section">
+            <h2>🧪 Quick Tests</h2>
+            <div class="button-group">
+                <button onclick="testSupervision()">Test Supervision Task</button>
+                <button onclick="testStandardTask()">Test Standard Task</button>
+                <button onclick="testGreenRisk()">Test Green Risk Task</button>
+                <button onclick="testRedRisk()">Test Red Risk Task</button>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h2>📊 Response</h2>
+            <div id="statusIndicator"></div>
+            <div id="response">Click a test button to see the response...</div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = '/api/agent';
+        
+        // Check API status on load
+        window.addEventListener('load', () => {
+            fetch(API_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ intent: 'health_check' })
+            })
+            .then(res => res.ok ? 'Connected ✅' : 'Error ❌')
+            .then(status => document.getElementById('apiStatus').textContent = status)
+            .catch(() => document.getElementById('apiStatus').textContent = 'Offline ❌');
+        });
+        
+        async function callAPI(payload) {
+            const responseDiv = document.getElementById('response');
+            const statusDiv = document.getElementById('statusIndicator');
+            
+            statusDiv.innerHTML = '<span class="status loading">⏳ Processing...</span>';
+            responseDiv.textContent = 'Sending request...';
+            
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    statusDiv.innerHTML = '<span class="status success">✅ Success</span>';
+                    responseDiv.textContent = JSON.stringify(data, null, 2);
+                } else {
+                    statusDiv.innerHTML = '<span class="status error">❌ Error</span>';
+                    responseDiv.textContent = 'Error: ' + JSON.stringify(data, null, 2);
+                }
+            } catch (error) {
+                statusDiv.innerHTML = '<span class="status error">❌ Failed</span>';
+                responseDiv.textContent = 'Request failed: ' + error.message;
+            }
+        }
+        
+        function testSupervision() {
+            callAPI({
+                "intent": "supervise",
+                "shakti_report": {
+                    "flag": "yellow",
+                    "errors": ["missing preheader"],
+                    "results": [
+                        {"service": "aweber", "ok": true},
+                        {"service": "substack", "ok": false}
+                    ]
+                },
+                "rules": {
+                    "if_missing_preheader": "Generate one in Halbert direct-response clarity style.",
+                    "if_substack_fail": "Resend payload via Zapier fallback."
+                },
+                "audience_tone": "Blend Gary Halbert's persuasive urgency with Louise Hay's healing affirmations."
+            });
+        }
+        
+        function testStandardTask() {
+            callAPI({
+                "name": "User Onboarding Flow",
+                "audience": "new_subscribers",
+                "actions": [
+                    {"name": "create_user_record", "data": {"email": "test@example.com"}},
+                    {"name": "send_welcome_email", "data": {"template": "welcome_v2"}},
+                    {"name": "add_to_drip_campaign", "data": {"campaign_id": "onboarding_21day"}}
+                ]
+            });
+        }
+        
+        function testGreenRisk() {
+            callAPI({
+                "name": "Simple Update Task",
+                "audience": "internal",
+                "actions": [
+                    {"name": "log_activity", "data": {"type": "test"}}
+                ]
+            });
+        }
+        
+        function testRedRisk() {
+            callAPI({
+                "name": "High Risk Payment Task",
+                "audience": "billing",
+                "actions": [
+                    {"name": "process_payment", "data": {"amount": 1000}},
+                    {"name": "delete_old_records", "data": {"confirm": true}},
+                    {"name": "charge_subscription", "data": {"plan": "premium"}}
+                ]
+            });
+        }
+    </script>
+</body>
+</html>
