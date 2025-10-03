@@ -1,2 +1,4 @@
 # NanoSutra Core Agent - Python Dependencies
 # Minimal dependencies for Vercel deployment
+flask
+flask-cors
