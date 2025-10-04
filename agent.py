@@ -16,7 +16,7 @@ class NanoSutraCoreAgent:
         self.setup_logging()
 
     def setup_logging(self):
-        # FIX 1: Remove file logging for Vercel (read-only filesystem)
+        # FIXED: Remove file logging for Vercel (read-only filesystem)
         logging.basicConfig(
             level=logging.INFO,
             format='%(asctime)s - %(levelname)s - %(message)s',
@@ -121,7 +121,7 @@ CORS(app)  # Enable CORS so your frontend can talk to this API
 # Initialize the agent
 agent = NanoSutraCoreAgent()
 
-# FIX 2: Change home route to return JSON instead of missing file
+# FIXED: Change home route to return JSON instead of missing HTML file
 @app.route('/')
 def home():
     """Main endpoint - returns agent info instead of missing HTML file"""
@@ -147,7 +147,7 @@ def health_check():
         'version': '1.0.0'
     })
 
-# FIX 3: Improved asyncio handling for Vercel
+# FIXED: Improved asyncio handling for Vercel
 def run_async_task(coro):
     """Helper function to run async tasks in Flask routes"""
     try:
@@ -253,4 +253,5 @@ def test_task(risk_type):
 # This is critical for Vercel - it needs to find the 'app' object
 if __name__ == '__main__':
     # This runs when you test locally, but Vercel will use the 'app' object directly
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    app.run(debug=True, host='0.0.0.0', port=5000)   
+    
